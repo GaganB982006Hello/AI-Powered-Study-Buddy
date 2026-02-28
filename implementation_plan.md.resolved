@@ -1,0 +1,83 @@
+# Implementation Plan - AI-Powered Study Buddy
+
+Build a premium, AI-driven study tool that helps students simplify complex topics, summarize notes, and practice with quizzes/flashcards.
+
+## Project Architecture
+
+The application will follow a modern Full-Stack architecture:
+
+- **Frontend**: Next.js App Router for a hybrid (SSR/CSR) experience.
+- **Styling**: Tailwind CSS for a premium, responsive UI.
+- **Animations**: Framer Motion for interactive elements like flashcard flips.
+- **Backend**: Next.js API Routes (Edge/Serverless) to interact with the AI model.
+- **AI Engine**: Google Gemini API (model: `gemini-1.5-flash` for speed, `gemini-1.5-pro` for complex logic).
+- **Database**: MongoDB (via Mongoose) to store user profiles, study sessions, and history.
+
+```mermaid
+graph TD
+    Client[Next.js Frontend] -->|API Request| Backend[Next.js API Routes]
+    Backend -->|Prompt| Gemini[Google Gemini API]
+    Backend -->|Store/Fetch| DB[(MongoDB)]
+    Gemini -->|JSON/Text| Backend
+    Backend -->|Response| Client
+```
+
+## Proposed Folder Structure
+
+```text
+/
+├── app/                  # Next.js App Router files
+│   ├── api/              # Backend API routes
+│   │   ├── explain/      # "Explain it Simply" endpoint
+│   │   ├── summarize/    # "Smart Summarizer" endpoint
+│   │   └── generate/     # Quiz/Flashcard generation
+│   ├── components/       # Reusable UI components
+│   │   ├── ui/           # Headless UI/Custom primitives
+│   │   ├── flashcards/   # Flashcard specific components
+│   │   └── layouts/      # Dashboard/Main layouts
+│   ├── dashboard/        # Main app view
+│   ├── globals.css       # Tailwind & Global styles
+│   └── page.tsx          # Landing page
+├── lib/                  # Utility functions & shared config
+│   ├── gemini.ts         # Gemini SDK initialization
+│   ├── db.ts            # MongoDB connection
+│   └── utils.ts          # Helper functions (clsx, tailwind-merge)
+├── types/                # TypeScript interfaces
+├── public/               # Static assets
+└── package.json
+```
+
+## Step-by-Step Implementation
+
+### Phase 1: Foundation
+1. [NEW] Initialize Next.js project with Tailwind and Framer Motion.
+2. [NEW] Configure `.env` for Gemini API Key and MongoDB URI.
+3. [NEW] Initialize Gemini SDK client in `lib/gemini.ts`.
+
+### Phase 2: "Explain it Simply" Tool
+1. [NEW] Create `app/api/explain/route.ts` to handle AI explanations based on difficulty.
+2. [NEW] Build Interactive Chat/Input UI in `app/components/ExplainTool.tsx`.
+
+### Phase 3: Smart Summarizer
+1. [NEW] Create `app/api/summarize/route.ts` (handle text and basic PDF parsing).
+2. [NEW] Build Summarizer UI with copy-to-clipboard/save features.
+
+### Phase 4: Quiz & Flashcard Generator
+1. [NEW] Create `app/api/generate/route.ts` to generate JSON-formatted flashcards and MCQs.
+2. [NEW] Build `FlashcardContainer` and `Flashcard` components with Framer Motion flip animations.
+
+### Phase 5: Persistence
+1. [NEW] Connect MongoDB.
+2. [NEW] Create schemas for `Note` and `QuizHistory`.
+
+## Verification Plan
+
+### Automated Tests
+- [ ] Test API routes using `curl` or Postman to ensure Gemini returns valid JSON responses.
+- [ ] Unit tests for prompt construction logic in `lib/prompts.ts`.
+
+### Manual Verification
+- [ ] Verify flashcard flip animation smoothness.
+- [ ] Test different difficulty levels for the "Explain it Simply" module.
+- [ ] Check responsive design on mobile/desktop.
+- [ ] Validate PDF upload and text extraction (MVP: text paste first).
