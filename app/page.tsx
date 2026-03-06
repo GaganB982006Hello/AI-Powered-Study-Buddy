@@ -14,6 +14,7 @@ export default function Home() {
 
     const handleExplain = async () => {
         setLoading(true);
+        setExplanation('');
         try {
             const res = await fetch('/api/explain', {
                 method: 'POST',
@@ -21,10 +22,13 @@ export default function Home() {
                 body: JSON.stringify({ topic, difficulty }),
             });
             const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to generate explanation');
+            }
             setExplanation(data.explanation);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            setExplanation('Oops! Something went wrong. Make sure you have your GEMINI_API_KEY set up.');
+            setExplanation(error.message || 'Oops! Something went wrong. Make sure you have your GEMINI_API_KEY set up correctly in .env.local');
         } finally {
             setLoading(false);
         }

@@ -3,7 +3,17 @@ import { model } from "@/lib/gemini";
 
 export async function POST(req: Request) {
     try {
-        const { topic, difficulty } = await req.json();
+        let body;
+        try {
+            body = await req.json();
+        } catch (e) {
+            return NextResponse.json(
+                { error: "Invalid JSON in request body" },
+                { status: 400 }
+            );
+        }
+
+        const { topic, difficulty } = body;
 
         if (!topic || !difficulty) {
             return NextResponse.json(
@@ -29,11 +39,16 @@ export async function POST(req: Request) {
         const text = response.text();
 
         return NextResponse.json({ explanation: text });
-    } catch (error) {
+    } catch (error: any) {
         console.error("AI Explanation Error:", error);
+
+        // Handle specific Gemini API errors if possible
+        const errorMessage = error.message || "Failed to generate explanation";
+        const status = error.status || 500;
+
         return NextResponse.json(
-            { error: "Failed to generate explanation" },
-            { status: 500 }
+            { error: errorMessage },
+            { status }
         );
     }
 }
